@@ -17,12 +17,19 @@ def add_sinogram_noise(sinogram, I_0):
 def G_ramp(w, eps=0):
     return abs(w)
 
-def add_scan_noise(img, I_0 = 1000):
-    theta = np.linspace(0, 180, max(img.shape)//2, endpoint=False)
+def add_scan_noise(img, I_0 = 1000, no_noise = False):
+    """
+    Add scan noise to an image, by performing three steps: Radon 
+    Transform, adding scan noise, FBP. if no_noise is set to True,
+    the step of adding noise is skipped. This is only for testing.
+    """
+
+    theta = np.linspace(0, 180, max(img.shape), endpoint=False)
     sinogram = radon(img, theta=theta, circle=False)
 
     # Add noise
-    sinogram = add_sinogram_noise(sinogram, I_0 = I_0)
+    if not no_noise:
+        sinogram = add_sinogram_noise(sinogram, I_0 = I_0)
 
     # Compute the Fourier Transform of the sinogram
     transformed_sinogram = np.fft.fft(sinogram, axis=0)
